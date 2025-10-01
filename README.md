@@ -6,6 +6,6 @@
 
 ### Day 1 
 Lab 0: [Set up Windows VM](labs/setup.md)  
-Lab 1: [Create Cluster](labs/eks)   
-Lab 2: [Deploy a simple app](labs/pods)   
+Lab 1: [Create Cluster](labs/eks/index.md)   
+Lab 2: [Deploy a simple app](labs/pods/index.md)   
 
