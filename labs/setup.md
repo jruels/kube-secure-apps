@@ -5,7 +5,7 @@
 ### Step 1: Open the folder
 
 1. Open Visual Studio Code
-2. In Visual Studio Code, click **Clone Repository** and paste `https://github.com/jruels/e2e-automation.git`
+2. In Visual Studio Code, click **Clone Repository** and paste `https://github.com/jruels/kube-secure-apps.git`
 3. Hit **Enter**, and in the pop-up window, browse to `C:\Users\tekstudent\Downloads\repos`
 4. Click **Select as repository destination**
 5. When prompted to open the cloned repo, choose **Open**.
@@ -15,8 +15,7 @@
 
 ### **Step 1: Log into the AWS Console**
 
-1. In a browser, log into the [AWS Console](https://console.aws.amazon.com/) using the credentials in the spreadsheet below.
-    * [Cloud credentials](https://docs.google.com/spreadsheets/d/1qWbTS_0iieOvcZzA37Ent3WYAX2rHiSpJMGS6wbCtMk/edit?usp=sharing)
+1. In a browser, log into the [AWS Console](https://console.aws.amazon.com/) using the credentials spreadsheet.
 2. Search for IAM in the search bar.
 3. Click **IAM**
 4.Click **Users**.
@@ -43,7 +42,7 @@
 2. Supply the required information.
    * Credentials 
    * Region = `us-west-1`
-3. Select the default option for the remaining options.
+3. Hit <ENTER> to select the default for the remaining options.
 
 ---
 
