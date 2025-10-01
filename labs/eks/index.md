@@ -35,6 +35,7 @@ In this lab, you will create a Kubernetes cluster on AWS (EKS)
 
 Always run VS Code in **Administrator mode** whenever you need to use Chocolatey to install or manage software that requires system-level changes.
 
+After completing the installation with Chocolatey, close VS Code, and relaunch it as a normal user.
 
 ## Deploy EKS cluster 
 Now that all the utilities are installed, let's start creating a cluster! 
@@ -46,7 +47,7 @@ eksctl create cluster \
 --node-type t3.medium \
 --nodes 3 \
 --nodes-min 1 \
---nodes-max 4
+--nodes-max 3
 ```
 
 After the command completes, list the nodes: 
