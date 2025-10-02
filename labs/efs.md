@@ -14,21 +14,24 @@ eksctl utils associate-iam-oidc-provider   --region us-west-1   --cluster eks-cl
 
 ### Create IAM policies
 
-Create an IAM policy that allows the Amazon EFS CSI driver to manage EFS resources:
-
-```sh
-curl -o iam-policy-example.json https://raw.githubusercontent.com/kubernetes-sigs/aws-efs-csi-driver/v1.10.0/docs/iam-policy-example.json
+Enter the lab directory: 
+```bash
+cd $HOME/Downloads/repos/secure-kube-apps/labs/persistent-storage   
 ```
 
+Create an IAM policy that allows the Amazon EFS CSI driver to manage EFS resources:
+
+
 ```sh
-aws iam create-policy   --policy-name AmazonEKS_EFS_CSI_Driver_Policy   --policy-document file://iam-policy-example.json
+aws iam create-policy   --policy-name AmazonEKS_EFS_CSI_Driver_Policy   --policy-document file://files/iam-policy-example.json
 ```
 
 Create a Kubernetes service account with an IAM role attached to this policy.  
 Replace `CLUSTER_NAME` and `<ACCOUNT_ID>` with your values:
 
+To get your `<ACCOUNT_ID>`, run: `aws sts get-caller-identity`
 ```sh
-eksctl create iamserviceaccount   --name efs-csi-controller-sa   --namespace kube-system   --cluster CLUSTER_NAME   --attach-policy-arn arn:aws:iam::<ACCOUNT_ID>:policy/AmazonEKS_EFS_CSI_Driver_Policy   --approve   --override-existing-serviceaccounts   --region us-east-2
+eksctl create iamserviceaccount   --name efs-csi-controller-sa   --namespace kube-system   --cluster CLUSTER_NAME   --attach-policy-arn arn:aws:iam::<ACCOUNT_ID>:policy/AmazonEKS_EFS_CSI_Driver_Policy   --approve   --override-existing-serviceaccounts   --region us-west-1
 ```
 
 ---
@@ -64,7 +67,7 @@ Amazon EFS requires mount targets in each Availability Zone where your worker no
 Retrieve your cluster’s VPC ID:
 
 ```sh
-vpc_id=$(aws eks describe-cluster   --name <cluster-name>   --query "cluster.resourcesVpcConfig.vpcId"   --output text)
+vpc_id=$(aws eks describe-cluster   --name eks-cluster   --query "cluster.resourcesVpcConfig.vpcId"   --output text)
 ```
 
 Retrieve the VPC CIDR range:
@@ -76,7 +79,7 @@ cidr_range=$(aws ec2 describe-vpcs   --vpc-ids $vpc_id   --query "Vpcs[].CidrBlo
 Create a security group to allow NFS (TCP 2049):
 
 ```sh
-security_group_id=$(aws ec2 create-security-group   --group-name MyEfsSecurityGroup   --description "My EFS security group"   --vpc-id $vpc_id   --output text)
+security_group_id=$(aws ec2 create-security-group   --group-name MyEfsSecurityGroup   --description "My EFS security group"   --vpc-id $vpc_id  --query 'GroupId'  --output text)
 ```
 
 Allow inbound NFS traffic from the VPC CIDR:
@@ -92,6 +95,22 @@ file_system_id=$(aws efs create-file-system   --region us-east-2   --performance
 ```
 
 Determine the subnets and Availability Zones of your worker nodes:
+
+```bash
+azs=$(kubectl get nodes -o jsonpath='{range .items[*]}{.metadata.labels.topology\.kubernetes\.io/zone}{"\n"}{end}' | sort -u)
+
+for az in $azs; do
+  subnet=$(aws ec2 describe-subnets \
+    --filters "Name=vpc-id,Values=$vpc_id" "Name=availability-zone,Values=$az" \
+    --query 'Subnets[0].SubnetId' \
+    --output text)
+  echo "Creating mount target in $az using subnet $subnet"
+  aws efs create-mount-target \
+    --file-system-id $file_system_id \
+    --subnet-id $subnet \
+    --security-groups $security_group_id
+done
+```
 
 ```sh
 kubectl get nodes --show-labels
