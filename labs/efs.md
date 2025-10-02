@@ -34,6 +34,22 @@ To get your `<ACCOUNT_ID>`, run: `aws sts get-caller-identity`
 eksctl create iamserviceaccount   --name efs-csi-controller-sa   --namespace kube-system   --cluster CLUSTER_NAME   --attach-policy-arn arn:aws:iam::<ACCOUNT_ID>:policy/AmazonEKS_EFS_CSI_Driver_Policy   --approve   --override-existing-serviceaccounts   --region us-west-1
 ```
 
+Create/attach an IRSA role for the node SA  
+
+```bash
+eksctl utils associate-iam-oidc-provider --cluster CLUSTER_NAME --region us-west-1 --approve
+
+eksctl create iamserviceaccount \
+  --cluster eks-cluster \
+  --namespace kube-system \
+  --name efs-csi-node-sa \
+  --attach-policy-arn arn:aws:iam::<ACCOUNT_ID>:policy/AmazonEKS_EFS_CSI_Driver_Policy \
+  --approve \
+  --override-existing-serviceaccounts \
+  --region us-west-1
+```
+
+Install ec2-csi helm chart 
 ---
 
 ## Install the EFS CSI Driver
@@ -52,8 +68,12 @@ helm repo update
 
 Install or upgrade the driver:
 
-```sh
-helm upgrade -i aws-efs-csi-driver aws-efs-csi-driver/aws-efs-csi-driver   --namespace kube-system   --set controller.serviceAccount.create=false   --set controller.serviceAccount.name=efs-csi-controller-sa
+```bash
+helm upgrade -i aws-efs-csi-driver aws-efs-csi-driver/aws-efs-csi-driver \
+  --namespace kube-system \
+  --set image.repository=602401143452.dkr.ecr.us-west-1.amazonaws.com/eks/aws-efs-csi-driver \
+  --set controller.serviceAccount.create=false \
+  --set controller.serviceAccount.name=efs-csi-controller-sa
 ```
 
 The `controller.serviceAccount.create=false` flag ensures the driver uses the IAM-enabled service account you created with `eksctl`.
@@ -118,6 +138,12 @@ aws efs describe-file-systems --file-system-id $file_system_id
 ```
 
 Wait until the `LifeCycleState` changes to `available`.
+
+From one efs-csi-node pod (pick a name from kubectl -n kube-system get pods -l app=efs-csi-node):
+```bash
+kubectl -n kube-system exec -it <efs-csi-node-pod> -- getent hosts fs-$file_system_id.efs.us-west-1.amazonaws.com
+```
+
 
 ---
 
