@@ -97,43 +97,18 @@ file_system_id=$(aws efs create-file-system   --region us-west-1   --performance
 Determine the subnets and Availability Zones of your worker nodes:
 
 ```bash
-# 1) AZs where your worker nodes are running
-azs=$(kubectl get nodes \
-  -o jsonpath='{range .items[*]}{.metadata.labels.topology\.kubernetes\.io/zone}{"\n"}{end}' | sort -u)
-
-# 2/3) For each AZ, pick the first subnet and create a mount target if missing
-for az in $azs; do
-  subnet=$(aws ec2 describe-subnets \
-    --filters "Name=vpc-id,Values=$vpc_id" "Name=availability-zone,Values=$az" \
-    --query 'Subnets[0].SubnetId' --output text)
-
-  if [ "$subnet" = "None" ] || [ -z "$subnet" ]; then
-    echo "No subnet found in $az for VPC $vpc_id"; continue
-  fi
-
-  # Skip if we already have a mount target in this subnet
-  existing_mt=$(aws efs describe-mount-targets \
-    --file-system-id $file_system_id \
-    --query "MountTargets[?SubnetId=='$subnet'].MountTargetId" \
-    --output text)
-
-  if [ -n "$existing_mt" ]; then
-    echo "Mount target already exists in $az ($subnet): $existing_mt"
-    continue
-  fi
-
-  echo "Creating mount target in $az using subnet $subnet"
-  aws efs create-mount-target \
-    --file-system-id $file_system_id \
-    --subnet-id $subnet \
-    --security-groups $security_group_id
-done
-
-# 4) Show final state
-aws efs describe-mount-targets \
-  --file-system-id $file_system_id \
-  --query "MountTargets[].{AZ:AvailabilityZoneName, Subnet:SubnetId, IP:IpAddress, State:LifeCycleState}" \
+aws ec2 describe-subnets \
+  --filters "Name=vpc-id,Values=$vpc_id" \
+  --query "Subnets[*].{SubnetId:SubnetId,AZ:AvailabilityZone}" \
   --output table
+```
+
+For each AZ where your nodes are, execute (REPLACE `<subnet-id-in-that-AZ>`): 
+```bash
+aws efs create-mount-target \
+  --file-system-id $file_system_id \
+  --subnet-id <subnet-id-in-that-AZ> \
+  --security-groups $security_group_id
 ```
 
 Verify the file system status:
