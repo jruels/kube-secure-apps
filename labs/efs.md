@@ -6,7 +6,7 @@ Amazon EKS requires specific permissions to mount storage volumes with the EFS C
 
 ### Associate an OIDC provider with the cluster
 
-Run the following command, replacing `CLUSTER_NAME` with your cluster’s name:
+Run the following command, replacing `eks-cluster` with your cluster’s name:
 
 ```sh
 eksctl utils associate-iam-oidc-provider   --region us-west-1   --cluster eks-cluster   --approve
@@ -27,17 +27,17 @@ aws iam create-policy   --policy-name AmazonEKS_EFS_CSI_Driver_Policy   --policy
 ```
 
 Create a Kubernetes service account with an IAM role attached to this policy.  
-Replace `CLUSTER_NAME` and `<ACCOUNT_ID>` with your values:
+Replace `eks-cluster` and `<ACCOUNT_ID>` with your values:
 
 To get your `<ACCOUNT_ID>`, run: `aws sts get-caller-identity`
 ```sh
-eksctl create iamserviceaccount   --name efs-csi-controller-sa   --namespace kube-system   --cluster CLUSTER_NAME   --attach-policy-arn arn:aws:iam::<ACCOUNT_ID>:policy/AmazonEKS_EFS_CSI_Driver_Policy   --approve   --override-existing-serviceaccounts   --region us-west-1
+eksctl create iamserviceaccount   --name efs-csi-controller-sa   --namespace kube-system   --cluster eks-cluster   --attach-policy-arn arn:aws:iam::<ACCOUNT_ID>:policy/AmazonEKS_EFS_CSI_Driver_Policy   --approve   --override-existing-serviceaccounts   --region us-west-1
 ```
 
 Create/attach an IRSA role for the node SA  
 
 ```bash
-eksctl utils associate-iam-oidc-provider --cluster CLUSTER_NAME --region us-west-1 --approve
+eksctl utils associate-iam-oidc-provider --cluster eks-cluster --region us-west-1 --approve
 
 eksctl create iamserviceaccount \
   --cluster eks-cluster \
