@@ -91,43 +91,23 @@ aws ec2 authorize-security-group-ingress   --group-id $security_group_id   --pro
 Create an EFS file system:
 
 ```sh
-file_system_id=$(aws efs create-file-system   --region us-east-2   --performance-mode generalPurpose   --query 'FileSystemId'   --output text)
+file_system_id=$(aws efs create-file-system   --region us-west-1   --performance-mode generalPurpose   --query 'FileSystemId'   --output text)
 ```
 
 Determine the subnets and Availability Zones of your worker nodes:
 
 ```bash
-azs=$(kubectl get nodes -o jsonpath='{range .items[*]}{.metadata.labels.topology\.kubernetes\.io/zone}{"\n"}{end}' | sort -u)
-
-for az in $azs; do
-  subnet=$(aws ec2 describe-subnets \
-    --filters "Name=vpc-id,Values=$vpc_id" "Name=availability-zone,Values=$az" \
-    --query 'Subnets[0].SubnetId' \
-    --output text)
+aws ec2 describe-subnets \
+  --filters "Name=vpc-id,Values=$vpc_id" \
+  --query "Subnets[].{id:SubnetId,az:AvailabilityZone}" \
+  --output text |
+while read subnet az; do
   echo "Creating mount target in $az using subnet $subnet"
   aws efs create-mount-target \
     --file-system-id $file_system_id \
     --subnet-id $subnet \
     --security-groups $security_group_id
 done
-```
-
-```sh
-kubectl get nodes --show-labels
-```
-
-Look for `topology.kubernetes.io/zone` to see the zones.
-
-List the subnets in your VPC:
-
-```sh
-aws ec2 describe-subnets   --filters "Name=vpc-id,Values=$vpc_id"   --query 'Subnets[*].{SubnetId: SubnetId,AvailabilityZone: AvailabilityZone,CidrBlock: CidrBlock}'   --output table
-```
-
-Create a mount target for each subnet where your worker nodes run. Replace `subnet-EXAMPLE` with the correct subnet ID:
-
-```sh
-aws efs create-mount-target   --file-system-id $file_system_id   --subnet-id subnet-EXAMPLE   --security-groups $security_group_id
 ```
 
 Verify the file system status:
@@ -151,7 +131,7 @@ git clone https://github.com/kubernetes-sigs/aws-efs-csi-driver.git
 Navigate to the static provisioning example:
 
 ```sh
-cd aws-efs-csi-driver/examples/kubernetes/static_provisioning/
+cd aws-efs-csi-driver/examples/kubernetes/static_provisioning/specs
 ```
 
 Edit `pv.yaml` and set the `volumeHandle` to your file system ID:
