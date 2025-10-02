@@ -9,7 +9,7 @@ Amazon EKS requires specific permissions to mount storage volumes with the EFS C
 Run the following command, replacing `CLUSTER_NAME` with your cluster’s name:
 
 ```sh
-eksctl utils associate-iam-oidc-provider   --region us-east-2   --cluster CLUSTER_NAME   --approve
+eksctl utils associate-iam-oidc-provider   --region us-west-1   --cluster eks-cluster   --approve
 ```
 
 ### Create IAM policies
