@@ -9,3 +9,8 @@ Lab 0: [Set up Windows VM](labs/setup.md)
 Lab 1: [Create Cluster](labs/eks/index.md)   
 Lab 2: [Deploy a simple app](labs/pods/index.md)   
 
+### Day 2 
+Lab 3: [Multi-tier Deployment](labs/multi-tier/index.md)  
+Lab 4: [ConfigMap](labs/configmap/index.md)  
+Lab 5: [Secrets](labs/secrets/index.md)  
+Lab 6: [Persistent Storage](labs/secrets/index.md)  
