@@ -49,7 +49,6 @@ eksctl create iamserviceaccount \
   --region us-west-1
 ```
 
-Install ec2-csi helm chart 
 ---
 
 ## Install the EFS CSI Driver
@@ -71,9 +70,10 @@ Install or upgrade the driver:
 ```bash
 helm upgrade -i aws-efs-csi-driver aws-efs-csi-driver/aws-efs-csi-driver \
   --namespace kube-system \
-  --set image.repository=602401143452.dkr.ecr.us-west-1.amazonaws.com/eks/aws-efs-csi-driver \
   --set controller.serviceAccount.create=false \
-  --set controller.serviceAccount.name=efs-csi-controller-sa
+  --set controller.serviceAccount.name=efs-csi-controller-sa \
+  --set node.serviceAccount.create=false \
+  --set node.serviceAccount.name=efs-csi-node-sa
 ```
 
 The `controller.serviceAccount.create=false` flag ensures the driver uses the IAM-enabled service account you created with `eksctl`.
