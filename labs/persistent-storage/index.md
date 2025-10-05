@@ -371,6 +371,12 @@ Navigate to the static provisioning example directory:
 cd aws-efs-csi-driver/examples/kubernetes/static_provisioning/specs
 ```
 
+This directory contains the following manifests that we'll use:
+- `storageclass.yaml` - Defines the EFS storage class
+- `pv.yaml` - Defines the Persistent Volume (needs editing)
+- `claim.yaml` - Defines the Persistent Volume Claim
+- `pod.yaml` - Sample application pod that mounts the EFS volume
+
 ### Edit the Persistent Volume
 
 Edit the `pv.yaml` file to use your EFS file system ID:
@@ -453,9 +459,19 @@ persistentvolumeclaim/efs-claim   Bound    efs-pv   5Gi        RWO            ef
 
 ### Deploy the Sample Application
 
-Deploy the sample pod that will mount the EFS volume:
+Deploy the sample pod that will mount the EFS volume.
+
+**Note:** The `pod.yaml` file is from the cloned repository at `aws-efs-csi-driver/examples/kubernetes/static_provisioning/specs/pod.yaml`. Make sure you're still in that directory:
 
 ```bash
+# Verify you're in the correct directory
+pwd
+# Should show: .../aws-efs-csi-driver/examples/kubernetes/static_provisioning/specs
+
+# If not, navigate back to it
+cd ~/aws-efs-csi-driver/examples/kubernetes/static_provisioning/specs
+
+# Deploy the pod
 kubectl apply -f pod.yaml
 ```
 
@@ -541,7 +557,9 @@ The old timestamps should still be there, followed by new ones. This proves your
 
 Dynamic provisioning allows Kubernetes to automatically create EFS Access Points for each PersistentVolumeClaim. This section is optional but demonstrates a more advanced use case.
 
-### Download the Dynamic Provisioning StorageClass
+### Download the Dynamic Provisioning Manifests
+
+For dynamic provisioning, we'll download manifests directly from the repository rather than using the cloned files:
 
 ```bash
 cd ~/
@@ -577,17 +595,22 @@ kubectl apply -f storageclass-dynamic.yaml
 
 ### Deploy a Pod with Dynamic Provisioning
 
-Download the pod manifest:
+Download the pod manifest (which includes both a PVC and Pod definition):
 
 ```bash
 curl -o pod-dynamic.yaml https://raw.githubusercontent.com/kubernetes-sigs/aws-efs-csi-driver/master/examples/kubernetes/dynamic_provisioning/specs/pod.yaml
 ```
 
-The downloaded file includes both a PVC and a Pod. Update it to use the dynamic storage class:
+**Note:** The `pod-dynamic.yaml` file includes both a PVC and a Pod. We'll update it to use unique names and the dynamic storage class:
 
 ```bash
 sed -i.bak 's/storageClassName: efs-sc/storageClassName: efs-sc-dynamic/' pod-dynamic.yaml
+sed -i.bak 's/name: efs-claim$/name: efs-claim-dynamic/' pod-dynamic.yaml
+sed -i.bak 's/name: efs-app$/name: efs-app-dynamic/' pod-dynamic.yaml
+sed -i.bak 's/claimName: efs-claim$/claimName: efs-claim-dynamic/' pod-dynamic.yaml
 ```
+
+**Note:** We use unique names (`efs-claim-dynamic` and `efs-app-dynamic`) to avoid conflicts with the static provisioning resources.
 
 Apply the manifest:
 
@@ -624,7 +647,7 @@ Verify the pod is running and writing data:
 kubectl get pods
 
 # Once running, check the data
-kubectl exec efs-app -- tail /data/out
+kubectl exec efs-app-dynamic -- tail /data/out
 ```
 
 ---
@@ -649,6 +672,8 @@ kubectl delete -f storageclass.yaml
 cd ~/
 kubectl delete -f pod-dynamic.yaml --ignore-not-found
 kubectl delete -f storageclass-dynamic.yaml --ignore-not-found
+
+# Note: The pod-dynamic.yaml includes both the pod (efs-app-dynamic) and PVC (efs-claim-dynamic)
 ```
 
 ### Delete EFS Mount Targets
