@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-taint
+spec:
+  selector:
+    matchLabels:
+      app: nginx-taint
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: nginx-taint
+    spec:
+      tolerations:
+      - key: "dedicated"
+        operator: "Equal"
+        value: "lab"
+        effect: "NoSchedule"
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 80
