@@ -16,6 +16,6 @@ Lab 5: [Secrets](labs/secrets/index.md)
 Lab 6: [Helm](labs/helm/index.md)  
 
 ### Day 3 
-Lab 7: [Persistent Volumes](labs/persistent-volumes/index.md)  
+Lab 7: [Persistent Volumes](labs/persistent-storage/index.md)  
 Lab 8: [Scheduling](labs/scheduling/index.md)  
 Lab 9: [Horizontal Pod Autoscaler](labs/hpa/index.md)  
