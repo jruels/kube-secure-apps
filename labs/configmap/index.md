@@ -34,7 +34,7 @@ kubectl create -f manifests/redis-pod.yaml
 
 ## Confirm Redis POD launched with ConfigMap settings
 ```
-kubectl exec -it redis redis-cli
+kubectl exec -it -- redis redis-cli
 CONFIG GET maxmemory
 ```
 

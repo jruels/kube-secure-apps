@@ -257,9 +257,7 @@ Determine which Availability Zones your worker nodes are in:
 
 ```bash
 echo "Your nodes are in these Availability Zones:"
-kubectl get nodes -o json | \
-  jq -r '.items[].metadata.labels["topology.kubernetes.io/zone"]' | \
-  sort -u
+kubectl get nodes -o jsonpath='{range .items[*]}{.metadata.labels.topology\.kubernetes\.io/zone}{"\n"}{end}' | sort -u
 ```
 
 List all subnets in your VPC to identify which subnet corresponds to each AZ:
