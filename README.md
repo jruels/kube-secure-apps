@@ -21,6 +21,6 @@ Lab 8: [Scheduling](labs/scheduling/index.md)
 Lab 9: [Horizontal Pod Autoscaler](labs/hpa/index.md)  
 
 ### Day 4
-Lab 10: [Install Istio](labs/istio/getting-started/index.md)
-Lab 11: [Traffic control](labs/traffic-management/index.md)
-Lab 12: [Fault injection](labs/fault-injection/index.md)
+Lab 10: [Install Istio](labs/istio/getting-started/index.md)   
+Lab 11: [Traffic control](labs/traffic-management/index.md)   
+Lab 12: [Fault injection](labs/fault-injection/index.md)   
