@@ -51,8 +51,8 @@ This module contains 5 traffic management scenarios:
 Before testing traffic management, apply the mesh resources that define subsets for version routing:
 
 ```bash
-# Ensure you're in the module 2 directory
-cd istio/modules/traffic-management
+# Ensure you're in the lab directory
+cd istio/traffic-management
 
 # Apply mesh resources
 kubectl apply -f manifests/setup-mesh-resources/
