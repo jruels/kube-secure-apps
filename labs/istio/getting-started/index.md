@@ -450,13 +450,4 @@ kubectl port-forward svc/kiali 20001:20001 -n istio-system
 - Check security groups allow inbound traffic on port 80
 - Verify your kubeconfig is pointing to the correct cluster
 
----
-
-## Next Steps
-
-Now that you have a working Istio service mesh with a sample application, proceed to:
-
-- **[Module 2 - Traffic Management](../02-traffic-management/)** - Learn advanced traffic routing techniques
-- **[Module 3 - Network Resiliency](../03-network-resiliency/)** - Implement timeouts, retries, and circuit breakers
-- **[Module 4 - Security](../04-security/)** - Configure mTLS, authentication, and authorization
 

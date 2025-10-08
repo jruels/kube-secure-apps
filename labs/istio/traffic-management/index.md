@@ -557,10 +557,3 @@ kubectl get pods -n workshop -l app=productcatalog
 
 ---
 
-## Next Steps
-
-Continue to **[Module 3 - Network Resiliency](../03-network-resiliency/)** to learn about:
-- Fault injection
-- Timeouts and retries
-- Circuit breaking
-- Rate limiting

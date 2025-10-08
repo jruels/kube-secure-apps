@@ -55,7 +55,7 @@ In this scenario, we inject a **15-second delay** for requests with a specific h
 
 ```bash
 # Enter the lab directory
-cd labs/istio/modules/fault-injection
+cd labs/istio/fault-injection
 # Apply delay configuration
 kubectl apply -f manifests/delay/catalogdetail-virtualservice.yaml
 ```
@@ -389,7 +389,7 @@ kubectl get virtualservice catalogdetail -n workshop -o yaml
 kubectl get pods -n workshop -l app=frontend
 
 # If pod is not running, redeploy Module 1
-cd ../../01-getting-started
+cd ../getting-started
 helm install mesh-basic . -n workshop
 ```
 
