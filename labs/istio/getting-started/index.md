@@ -108,12 +108,12 @@ kubectl get svc -n istio-ingress
 
 ## Deploy the Application
 
-### Step 1: Navigate to Module Directory
+### Step 1: Navigate to lab Directory
 
 ```bash
 # Clone this repository if you haven't already
 git clone https://github.com/jruels/kube-secure-apps.git
-cd $HOME/Downloads/repos/kube-secure-apps/labs/istio/modules/getting-started
+cd $HOME/Downloads/repos/kube-secure-apps/labs/istio/getting-started
 ```
 
 ### Step 2: Create and Label the Workshop Namespace
