@@ -28,7 +28,9 @@ All services are automatically injected with Istio sidecar proxies, enabling mes
 
 ### 1. EKS Cluster with Istio Installed
 
-You need an EKS cluster with Istio already installed. Follow these steps: 
+In VS Code open a new terminal and select the `GitBash` profile.
+
+Follow these steps: 
 
 Install Istio via Helm:
 ```bash
@@ -111,7 +113,7 @@ kubectl get svc -n istio-ingress
 ```bash
 # Clone this repository if you haven't already
 git clone https://github.com/jruels/kube-secure-apps.git
-cd kube-secure-apps/labs/istio/modules/getting-started
+cd $HOME/Downloads/repos/kube-secure-apps/labs/istio/modules/getting-started
 ```
 
 ### Step 2: Create and Label the Workshop Namespace
